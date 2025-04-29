@@ -1,0 +1,10 @@
+[project]
+name = "labelmaker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "qrcode>=8.0",
+    "reportlab>=4.2.5",
+]
