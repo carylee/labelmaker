@@ -77,8 +77,8 @@ class Label:
 class DymoLabel(Label):
     """Label type for Dymo label printers."""
     
-    WIDTH = 153
     HEIGHT = 72
+    PADDING = 20
     
     def generate(self, pdf: canvas.Canvas) -> None:
         """
@@ -87,7 +87,9 @@ class DymoLabel(Label):
         Args:
             pdf: ReportLab canvas object
         """
-        width, height = landscape((self.WIDTH, self.HEIGHT))
+        # Calculate dynamic width based on text content
+        text_width = self.calculate_text_width() + self.PADDING
+        width, height = text_width, self.HEIGHT
         pdf.setPageSize((width, height))
         self.draw_text_centered(pdf, self.text, width, height, self.font_size)
 
@@ -125,20 +127,22 @@ class LabelMaker:
         self.pdf = canvas.Canvas(output_file)
         self.labels: List[Label] = []
     
-    def add_label(self, label_type: LabelType, text: str, font_size: int) -> None:
+    def add_label(self, label_type: LabelType, text: str, font_size: int, copies: int = 1) -> None:
         """
-        Add a label to be generated.
+        Add one or more copies of a label to be generated.
         
         Args:
             label_type: Type of label ('dymo' or 'ptouch')
             text: Text content for the label
             font_size: Font size for the text
+            copies: Number of identical copies to create
         """
-        if label_type == 'dymo':
-            label = DymoLabel(text, font_size)
-        else:
-            label = PTouchLabel(text, font_size)
-        self.labels.append(label)
+        for _ in range(copies):
+            if label_type == 'dymo':
+                label = DymoLabel(text, font_size)
+            else:
+                label = PTouchLabel(text, font_size)
+            self.labels.append(label)
     
     def generate_pdf(self) -> None:
         """Generate PDF file with all added labels."""
@@ -155,13 +159,14 @@ def main() -> None:
     parser.add_argument('labels', nargs='+', help='Labels to print.')
     parser.add_argument('--size', choices=['S', 'M', 'L'], default='M', help='Font size: S, M, L.')
     parser.add_argument('--output', default='labels.pdf', help='Output PDF filename.')
+    parser.add_argument('--copies', type=int, default=1, help='Number of copies for each label.')
     args = parser.parse_args()
 
     font_size = FONT_SIZES[args.size.upper()]
     label_maker = LabelMaker(args.output)
     
     for label_text in args.labels:
-        label_maker.add_label(args.printer, label_text, font_size)
+        label_maker.add_label(args.printer, label_text, font_size, args.copies)
     
     label_maker.generate_pdf()
 
