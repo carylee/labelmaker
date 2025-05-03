@@ -75,27 +75,27 @@ class Label:
 
 
 class DymoLabel(Label):
-    """Label type for Dymo label printers."""
+    """Label type for Dymo label printers with fixed size labels."""
     
+    # Fixed dimensions for Dymo labels
+    WIDTH = 153
     HEIGHT = 72
-    PADDING = 20
     
     def generate(self, pdf: canvas.Canvas) -> None:
         """
         Generate a label specifically formatted for Dymo label printers.
+        Uses fixed size labels (153x72).
         
         Args:
             pdf: ReportLab canvas object
         """
-        # Calculate dynamic width based on text content
-        text_width = self.calculate_text_width() + self.PADDING
-        width, height = text_width, self.HEIGHT
+        width, height = landscape((self.WIDTH, self.HEIGHT))
         pdf.setPageSize((width, height))
         self.draw_text_centered(pdf, self.text, width, height, self.font_size)
 
 
 class PTouchLabel(Label):
-    """Label type for Brother P-touch label printers."""
+    """Label type for Brother P-touch tape label printers with flexible width."""
     
     HEIGHT = 12 * mm
     PADDING = 10
@@ -103,6 +103,7 @@ class PTouchLabel(Label):
     def generate(self, pdf: canvas.Canvas) -> None:
         """
         Generate a label specifically formatted for Brother P-touch label printers.
+        Width is dynamic based on text content (tape printer).
         
         Args:
             pdf: ReportLab canvas object
