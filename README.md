@@ -10,15 +10,6 @@ LabelMaker is a simple Python tool that generates PDF files formatted specifical
 - Variable font sizes
 - Multiple labels in a single PDF output
 
-## Installation
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-# or
-pip install -e .
-```
-
 ## Usage
 
 ```bash
