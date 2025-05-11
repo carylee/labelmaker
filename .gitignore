@@ -1,4 +1,5 @@
 .venv
 labels.pdf
+*.pdf
 
 **/.claude/settings.local.json
